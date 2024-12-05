@@ -1,0 +1,27 @@
+﻿services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  basicapi:
+    image: basicapi
+    build:
+      context: .
+      dockerfile: BasicApi/Dockerfile
+    depends_on:
+      db:
+        condition: service_started
+    environment:
+      DatabaseOptions__User: ${POSTGRES_USER}
+      DatabaseOptions__Password: ${POSTGRES_PASSWORD}
+      DatabaseOptions__Host: ${DATABASE_HOST}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
